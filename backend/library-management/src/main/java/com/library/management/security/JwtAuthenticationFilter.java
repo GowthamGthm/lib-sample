@@ -4,6 +4,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -30,7 +34,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String authHeader = request.getHeader("Authorization");
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            log.info("Preflight request detected");
+            log.info("*************************************");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        log.info("*************************************");
+        log.info("URL : {}" , request.getRequestURL().toString());
+        log.info("METHOD : {}" , request.getMethod());
+
+        Collections.list(request.getHeaderNames())
+                .forEach(header -> log.info(header + ": " + request.getHeader(header)));
+
+        log.info("------ JWT Authentication Filter ------");
+
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("authHeader: " + authHeader);
         String token = null;
         String username = null;
 
