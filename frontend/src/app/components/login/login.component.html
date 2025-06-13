@@ -1,0 +1,71 @@
+
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="row w-100">
+    <div class="col-md-6 col-lg-4 mx-auto">
+      <div class="card shadow">
+        <div class="card-body p-5">
+          <div class="text-center mb-4">
+            <h2 class="card-title text-primary">Library Management</h2>
+            <p class="text-muted">Sign in to your account</p>
+          </div>
+
+          <!-- Sample Credentials Notice -->
+          <div class="alert alert-info mb-4">
+            <h6 class="alert-heading">Sample Login Credentials:</h6>
+            <p class="mb-1"><strong>Username:</strong> admin</p>
+            <p class="mb-0"><strong>Password:</strong> admin123</p>
+          </div>
+
+          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input 
+                type="text" 
+                class="form-control" 
+                id="username"
+                formControlName="username"
+                [class.is-invalid]="f['username'].invalid && f['username'].touched">
+              <div class="invalid-feedback">
+                Username is required
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input 
+                type="password" 
+                class="form-control" 
+                id="password"
+                formControlName="password"
+                [class.is-invalid]="f['password'].invalid && f['password'].touched">
+              <div class="invalid-feedback">
+                Password is required
+              </div>
+            </div>
+
+            <div class="alert alert-danger" *ngIf="error">
+              {{ error }}
+            </div>
+
+            <div class="d-grid gap-2">
+              <button 
+                type="submit" 
+                class="btn btn-primary"
+                [disabled]="loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                Sign In
+              </button>
+            </div>
+          </form>
+
+          <div class="text-center mt-3">
+            <p class="mb-0">
+              Don't have an account? 
+              <a href="#" (click)="goToRegister()" class="text-primary">Register here</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

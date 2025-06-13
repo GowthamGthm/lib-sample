@@ -1,0 +1,163 @@
+
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <h1 class="h3 mb-4">Book Borrowing</h1>
+    </div>
+  </div>
+
+  <!-- Borrow Book Form -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Borrow a Book</h5>
+        </div>
+        <div class="card-body">
+          <form (ngSubmit)="borrowBook()">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <label for="user" class="form-label">Select User</label>
+                <select 
+                  class="form-select" 
+                  id="user"
+                  [(ngModel)]="selectedUserId"
+                  name="user"
+                  required>
+                  <option value="">Choose a user...</option>
+                  <option *ngFor="let user of users" [value]="user.id">
+                    {{ user.fullName }} ({{ user.username }})
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label for="book" class="form-label">Select Book</label>
+                <select 
+                  class="form-select" 
+                  id="book"
+                  [(ngModel)]="selectedBookId"
+                  name="book"
+                  required>
+                  <option value="">Choose a book...</option>
+                  <option *ngFor="let book of availableBooks" [value]="book.id">
+                    {{ book.title }} by {{ book.author }} ({{ book.availableCopies }} available)
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary" [disabled]="loading">
+                  <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
+                  Borrow Book
+                </button>
+              </div>
+            </div>
+
+            <div class="alert alert-danger" *ngIf="error">
+              {{ error }}
+            </div>
+
+            <div class="alert alert-success" *ngIf="success">
+              {{ success }}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Currently Borrowed Books -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Currently Borrowed Books ({{ borrowedBooks.length }})</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Book Title</th>
+                  <th>Author</th>
+                  <th>Borrower</th>
+                  <th>Borrowed Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let borrowedBook of borrowedBooks">
+                  <td>{{ borrowedBook.book.title }}</td>
+                  <td>{{ borrowedBook.book.author }}</td>
+                  <td>{{ borrowedBook.user.fullName }}</td>
+                  <td>{{ borrowedBook.borrowedAt | date:'short' }}</td>
+                  <td>
+                    <button 
+                      class="btn btn-sm btn-success"
+                      (click)="returnBook(borrowedBook)">
+                      <i class="fas fa-undo me-1"></i>Return
+                    </button>
+                  </td>
+                </tr>
+                <tr *ngIf="borrowedBooks.length === 0">
+                  <td colspan="5" class="text-center text-muted">No books currently borrowed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Available Books Summary -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Available Books Summary</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <p><strong>Total Available Books:</strong> {{ availableBooks.length }}</p>
+            </div>
+            <div class="col-md-6">
+              <p><strong>Total Copies Available:</strong> 
+                {{ getTotalAvailableCopies() }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>Available Copies</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let book of getFirstFiveBooks()">
+                  <td>{{ book.title }}</td>
+                  <td>{{ book.author }}</td>
+                  <td>
+                    <span class="badge bg-success">{{ book.availableCopies }}</span>
+                  </td>
+                </tr>
+                <tr *ngIf="getRemainingBooksCount() > 0">
+                  <td colspan="3" class="text-center text-muted">
+                    ... and {{ getRemainingBooksCount() }} more books
+                  </td>
+                </tr>
+                <tr *ngIf="availableBooks.length === 0">
+                  <td colspan="3" class="text-center text-muted">No books available for borrowing</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

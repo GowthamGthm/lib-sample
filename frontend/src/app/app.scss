@@ -1,0 +1,19 @@
+
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  background-color: #f8f9fc;
+}
+
+.main-content.with-navbar {
+  margin-top: 0;
+}
+
+.main-content:not(.with-navbar) {
+  margin-top: 0;
+}
