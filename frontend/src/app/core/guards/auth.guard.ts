@@ -3,30 +3,6 @@ import { Router, CanActivate } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { Observable, switchMap, tap } from 'rxjs';
 
-// // auth.guard.ts
-// @Injectable({
-//   providedIn: 'root'
-// })
-// export class AuthGuard implements CanActivate {
-  
-//   constructor(
-//     private router: Router,
-//     private authService: AuthService
-//   ) { }
-
-//   canActivate(): Observable<boolean> {
-//     return this.authService.isAuthenticated().pipe(
-//       tap(isAuthenticated => {
-//         if (!isAuthenticated) {
-//           console.log('from auth gaurd , moving to login page');
-//           this.router.navigate(['/login']);
-//         }
-//       })
-//     );
-//   }
-// }
-
-
 @Injectable({
   providedIn: 'root'
 })

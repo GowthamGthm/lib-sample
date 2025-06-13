@@ -88,22 +88,9 @@ export class AuthService {
       );
   }
 
-  logout(): Observable<void> {
-    return this.http
-      .post<void>(
-        `${environment.apiUrl}/auth/logout`,
-        {},
-        {
-          headers: AppUtils.getHeaders(),
-        }
-      )
-      .pipe(
-        tap(() => this.clearSession()),
-        catchError((error) => {
-          this.clearSession();
-          throw error;
-        })
-      );
+  logout(): Observable<String | null> {
+    this.clearSession();
+    return of(null);
   }
 
   private setSession(token: string, user: User): void {
@@ -132,5 +119,4 @@ export class AuthService {
       first()
     );
   }
-
 }
