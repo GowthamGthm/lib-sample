@@ -1,30 +1,38 @@
-
-import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../core/services/user.service';
-import { User } from '../../core/models/user.model';
+import { Component, OnInit } from "@angular/core";
+import { UserService } from "../../core/services/user.service";
+import { User } from "../../core/models/user.model";
+import { AuthService } from "../../core/services/auth.service";
 
 @Component({
-  selector: 'app-users',
-  templateUrl: './users.component.html',
-  styleUrls: ['./users.component.scss']
+  selector: "app-users",
+  templateUrl: "./users.component.html",
+  styleUrls: ["./users.component.scss"],
 })
 export class UsersComponent implements OnInit {
+  currentUser: User | null = null;
+
   users: User[] = [];
   showAddForm = false;
   newUser: User = {
-    username: '',
-    email: '',
-    fullName: '',
-    password: ''
+    username: "",
+    email: "",
+    fullName: "",
+    password: "",
   };
   loading = false;
-  error = '';
-  success = '';
+  error = "";
+  success = "";
 
-  constructor(private userService: UserService) { }
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadUsers();
+    this.authService.currentUser.subscribe((user) => {
+      this.currentUser = user;
+    });
   }
 
   loadUsers(): void {
@@ -33,8 +41,8 @@ export class UsersComponent implements OnInit {
         this.users = users;
       },
       error: (error) => {
-        this.error = 'Failed to load users';
-      }
+        this.error = "Failed to load users";
+      },
     });
   }
 
@@ -47,49 +55,54 @@ export class UsersComponent implements OnInit {
 
   resetForm(): void {
     this.newUser = {
-      username: '',
-      email: '',
-      fullName: '',
-      password: ''
+      username: "",
+      email: "",
+      fullName: "",
+      password: "",
     };
-    this.error = '';
-    this.success = '';
+    this.error = "";
+    this.success = "";
   }
 
   addUser(): void {
-    if (!this.newUser.username || !this.newUser.email || !this.newUser.fullName || !this.newUser.password) {
-      this.error = 'All fields are required';
+    if (
+      !this.newUser.username ||
+      !this.newUser.email ||
+      !this.newUser.fullName ||
+      !this.newUser.password
+    ) {
+      this.error = "All fields are required";
       return;
     }
 
     this.loading = true;
-    this.error = '';
+    this.error = "";
 
     this.userService.createUser(this.newUser).subscribe({
       next: (user) => {
         this.users.push(user);
-        this.success = 'User added successfully';
+        this.success = "User added successfully";
         this.resetForm();
         this.showAddForm = false;
         this.loading = false;
       },
       error: (error) => {
-        this.error = error.error || 'Failed to add user';
+        this.error = error.error || "Failed to add user";
         this.loading = false;
-      }
+      },
     });
   }
 
   deleteUser(id: number): void {
-    if (confirm('Are you sure you want to delete this user?')) {
+    if (confirm("Are you sure you want to delete this user?")) {
       this.userService.deleteUser(id).subscribe({
         next: () => {
-          this.users = this.users.filter(user => user.id !== id);
-          this.success = 'User deleted successfully';
+          this.users = this.users.filter((user) => user.id !== id);
+          this.success = "User deleted successfully";
         },
         error: (error) => {
-          this.error = 'Failed to delete user';
-        }
+          this.error = "Failed to delete user";
+        },
       });
     }
   }

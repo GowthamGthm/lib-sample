@@ -1,16 +1,14 @@
-
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Book } from '../models/book.model';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { catchError, map, Observable, tap } from "rxjs";
+import { environment } from "../../../environments/environment";
+import { Book } from "../models/book.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class BookService {
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getAllBooks(): Observable<Book[]> {
     return this.http.get<Book[]>(`${environment.privateUrL}/books`);
@@ -25,11 +23,15 @@ export class BookService {
   }
 
   searchBooksByTitle(title: string): Observable<Book[]> {
-    return this.http.get<Book[]>(`${environment.privateUrL}/books/search/title?title=${title}`);
+    return this.http.get<Book[]>(
+      `${environment.privateUrL}/books/search/title?title=${title}`
+    );
   }
 
   searchBooksByAuthor(author: string): Observable<Book[]> {
-    return this.http.get<Book[]>(`${environment.privateUrL}/books/search/author?author=${author}`);
+    return this.http.get<Book[]>(
+      `${environment.privateUrL}/books/search/author?author=${author}`
+    );
   }
 
   createBook(book: Book): Observable<Book> {
@@ -41,6 +43,20 @@ export class BookService {
   }
 
   deleteBook(id: number): Observable<any> {
-    return this.http.delete(`${environment.privateUrL}/books/${id}`);
+    return this.http
+      .delete(`${environment.privateUrL}/books/${id}`, {
+        observe: "response",
+        responseType: "text",
+      })
+      .pipe(
+        map((response) => {
+          console.log("Delete success:", response);
+          return response.body;
+        }),
+        catchError((error) => {
+          console.error("Delete error:", error);
+          throw error;
+        })
+      );
   }
 }

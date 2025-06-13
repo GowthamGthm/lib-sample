@@ -1,17 +1,14 @@
-
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { User } from '../models/user.model';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { catchError, map, Observable } from "rxjs";
+import { environment } from "../../../environments/environment";
+import { User } from "../models/user.model";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class UserService {
-
-  constructor(private http: HttpClient) { }
-
+  constructor(private http: HttpClient) {}
 
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(`${environment.privateUrL}/users`);
@@ -30,8 +27,20 @@ export class UserService {
   }
 
   deleteUser(id: number): Observable<any> {
-    return this.http.delete(`${environment.privateUrL}/users/${id}`);
+    return this.http
+      .delete(`${environment.privateUrL}/users/${id}`, {
+        observe: "response",
+        responseType: "text",
+      })
+      .pipe(
+        map((response) => {
+          console.log("Delete success:", response);
+          return response.body;
+        }),
+        catchError((error) => {
+          console.error("Delete error:", error);
+          throw error;
+        })
+      );
   }
-
-
 }

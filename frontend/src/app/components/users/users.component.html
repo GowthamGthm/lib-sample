@@ -122,7 +122,7 @@
                     <button 
                       class="btn btn-sm btn-danger"
                       (click)="deleteUser(user.id!)"
-                      [disabled]="user.username === 'admin'">
+                      [disabled]="(user.username === 'admin') || (currentUser?.username == user.username)">
                       <i class="fas fa-trash"></i>
                     </button>
                   </td>
