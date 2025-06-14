@@ -1,13 +1,17 @@
 
 package com.library.management.service;
 
+import com.library.management.dto.BorrowedBookDto;
 import com.library.management.entity.Book;
 import com.library.management.entity.BorrowedBook;
 import com.library.management.entity.User;
 import com.library.management.repository.BorrowedBookRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,15 +19,19 @@ import java.util.Optional;
 public class BorrowingService {
     
     @Autowired
-    private BorrowedBookRepository borrowedBookRepository;
+    BorrowedBookRepository borrowedBookRepository;
     
     @Autowired
-    private BookService bookService;
+    BookService bookService;
     
     @Autowired
-    private UserService userService;
+    UserService userService;
+
+    @Autowired
+    ModelMapper modelMapper;
+
     
-    public BorrowedBook borrowBook(Long userId, Long bookId) {
+    public BorrowedBookDto borrowBook(Long userId, Long bookId) {
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Book book = bookService.getBookById(bookId)
@@ -47,11 +55,11 @@ public class BorrowingService {
         
         // Update book availability
         bookService.borrowBook(bookId);
-        
-        return borrowedBook;
+        BorrowedBookDto borrowedBookDto = modelMapper.map(borrowedBook, BorrowedBookDto.class);
+        return borrowedBookDto;
     }
     
-    public BorrowedBook returnBook(Long userId, Long bookId) {
+    public BorrowedBookDto returnBook(Long userId, Long bookId) {
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         Book book = bookService.getBookById(bookId)
@@ -68,21 +76,47 @@ public class BorrowingService {
         
         // Update book availability
         bookService.returnBook(bookId);
-        
-        return borrowedBook;
+        BorrowedBookDto borrowedBookDto = modelMapper.map(borrowedBook, BorrowedBookDto.class);
+        return borrowedBookDto;
     }
     
-    public List<BorrowedBook> getUserBorrowedBooks(Long userId) {
+    public List<BorrowedBookDto> getUserBorrowedBooks(Long userId) {
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return borrowedBookRepository.findByUserAndIsReturned(user, false);
+        List<BorrowedBook> userNotReturnedBooks = borrowedBookRepository.findByUserAndIsReturned(user, false);
+
+        List<BorrowedBookDto> userBooksList = Optional.ofNullable(userNotReturnedBooks).orElse(Collections.emptyList())
+                .stream()
+                .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
+                .toList();
+
+        return userBooksList;
     }
     
-    public List<BorrowedBook> getAllBorrowedBooks() {
-        return borrowedBookRepository.findByIsReturned(false);
+    public List<BorrowedBookDto> getAllBorrowedBooks() {
+
+        List<BorrowedBook> allBooked = borrowedBookRepository.findByIsReturned(false);
+
+        List<BorrowedBookDto> allBorrowedList = Optional.ofNullable(allBooked).orElse(Collections.emptyList())
+                .stream()
+                .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
+                .toList();
+
+        return allBorrowedList;
+
     }
     
-    public List<BorrowedBook> getAllBorrowingHistory() {
-        return borrowedBookRepository.findAll();
+    public List<BorrowedBookDto> getAllBorrowingHistory() {
+
+        List<BorrowedBook> borrowingHistory = borrowedBookRepository.findAll();
+
+        List<BorrowedBookDto> allBorrowedList = Optional.ofNullable(borrowingHistory).orElse(Collections.emptyList())
+                .stream()
+                .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
+                .toList();
+
+        return allBorrowedList;
+
     }
+
 }
