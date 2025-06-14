@@ -83,35 +83,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
+        List<String> excludedPaths = Arrays.asList("/api/auth/");
 
-        // List of paths to exclude from JWT filtering
-        List<String> excludedPaths = Arrays.asList(
-                // Authentication endpoints
-                "/api/auth/",
-                // Swagger/OpenAPI endpoints
-                "/swagger-ui.html",
-                "/swagger-ui/",
-                "/v3/api-docs",
-                "/v3/api-docs/",
-                "/v3/api-docs/**",
-                "/swagger-resources",
-                "/swagger-resources/",
-                "/swagger-resources/**",
-                "/configuration/ui",
-                "/configuration/security",
-                "/webjars/",
-                "/webjars/**",
-                "/favicon.ico",
-                "/api-docs/swagger-config"
-        );
-
-        // Check if the current path matches any excluded path
-        return excludedPaths.stream().anyMatch(excludedPath ->
-                path.equals(excludedPath) ||
-                        path.startsWith(excludedPath) ||
-                        (excludedPath.endsWith("/") && path.startsWith(excludedPath)) ||
-                        (excludedPath.endsWith("/**") && path.startsWith(excludedPath.replace("/**", "")))
-        );
+        return excludedPaths.stream().anyMatch(path::startsWith);
     }
 
 }
