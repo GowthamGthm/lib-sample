@@ -5,6 +5,7 @@ import com.library.management.entity.User;
 import com.library.management.exceptions.UserOperationFailed;
 import com.library.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<List<User>> getAllUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader) {
         try {
             List<User> users = userService.getAllUsers();
             return ResponseEntity.ok(users);
@@ -30,7 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+                                            @PathVariable Long id) {
         try {
             return userService.getUserById(id)
                     .map(ResponseEntity::ok)
@@ -41,7 +43,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody User user) {
+    public ResponseEntity<?> createUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+                                        @RequestBody User user) {
         try {
             User newUser = userService.createUser(user);
             return ResponseEntity.ok(newUser);
@@ -51,7 +54,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
+    public ResponseEntity<?> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+                                        @PathVariable Long id, @RequestBody User userDetails) {
         try {
             User updatedUser = userService.updateUser(id, userDetails);
             return ResponseEntity.ok(updatedUser);
@@ -61,7 +65,8 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authHeader,
+                                        @PathVariable Long id) {
         try {
             userService.deleteUser(id);
             Map<String, String> message = Map.of("message", "User deleted successfully");

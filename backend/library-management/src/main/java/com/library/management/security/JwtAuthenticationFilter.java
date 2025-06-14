@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Component
 @Slf4j
@@ -81,7 +83,35 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.startsWith("/api/auth/");
+
+        // List of paths to exclude from JWT filtering
+        List<String> excludedPaths = Arrays.asList(
+                // Authentication endpoints
+                "/api/auth/",
+                // Swagger/OpenAPI endpoints
+                "/swagger-ui.html",
+                "/swagger-ui/",
+                "/v3/api-docs",
+                "/v3/api-docs/",
+                "/v3/api-docs/**",
+                "/swagger-resources",
+                "/swagger-resources/",
+                "/swagger-resources/**",
+                "/configuration/ui",
+                "/configuration/security",
+                "/webjars/",
+                "/webjars/**",
+                "/favicon.ico",
+                "/api-docs/swagger-config"
+        );
+
+        // Check if the current path matches any excluded path
+        return excludedPaths.stream().anyMatch(excludedPath ->
+                path.equals(excludedPath) ||
+                        path.startsWith(excludedPath) ||
+                        (excludedPath.endsWith("/") && path.startsWith(excludedPath)) ||
+                        (excludedPath.endsWith("/**") && path.startsWith(excludedPath.replace("/**", "")))
+        );
     }
 
 }
