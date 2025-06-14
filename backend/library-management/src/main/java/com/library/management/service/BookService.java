@@ -2,9 +2,16 @@
 package com.library.management.service;
 
 import com.library.management.entity.Book;
+import com.library.management.entity.BorrowedBook;
+import com.library.management.exceptions.BookOperationFailed;
 import com.library.management.repository.BookRepository;
+import com.library.management.repository.BorrowedBookRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -12,8 +19,11 @@ import java.util.Optional;
 public class BookService {
     
     @Autowired
-    private BookRepository bookRepository;
-    
+    BookRepository bookRepository;
+
+    @Autowired
+    BorrowedBookRepository borrowedBookRepository;
+
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
@@ -41,7 +51,7 @@ public class BookService {
     
     public Book updateBook(Long id, Book bookDetails) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Book not found"));
+                .orElseThrow(() -> new BookOperationFailed(HttpStatus.NOT_FOUND , "Book not found" , "Book not found"));
         
         book.setTitle(bookDetails.getTitle());
         book.setAuthor(bookDetails.getAuthor());
@@ -56,8 +66,16 @@ public class BookService {
         
         return bookRepository.save(book);
     }
-    
+
+    @Transactional
     public void deleteBook(Long id) {
+        List<BorrowedBook> bookNotReturned = borrowedBookRepository.findByBookAndIsReturned(new Book(id), false);
+
+        if(!CollectionUtils.isEmpty(bookNotReturned)) {
+            throw new BookOperationFailed(HttpStatus.BAD_REQUEST, "Delete blocked: outstanding books not returned", "Delete blocked: outstanding books not returned");
+        }
+
+        borrowedBookRepository.deleteByBook(new Book(id));
         bookRepository.deleteById(id);
     }
     
@@ -73,6 +91,7 @@ public class BookService {
     }
     
     public boolean returnBook(Long bookId) {
+
         Optional<Book> bookOpt = bookRepository.findById(bookId);
         if (bookOpt.isPresent()) {
             Book book = bookOpt.get();

@@ -70,14 +70,13 @@ public class BorrowingService {
                 .orElseThrow(() -> new RuntimeException("No active borrowing record found"));
         
         // Mark as returned
-        borrowedBook.setIsReturned(true);
+        borrowedBook.setReturned(true);
         borrowedBook.setReturnedAt(LocalDateTime.now());
         borrowedBook = borrowedBookRepository.save(borrowedBook);
         
         // Update book availability
         bookService.returnBook(bookId);
-        BorrowedBookDto borrowedBookDto = modelMapper.map(borrowedBook, BorrowedBookDto.class);
-        return borrowedBookDto;
+        return modelMapper.map(borrowedBook, BorrowedBookDto.class);
     }
     
     public List<BorrowedBookDto> getUserBorrowedBooks(Long userId) {
@@ -85,24 +84,20 @@ public class BorrowingService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<BorrowedBook> userNotReturnedBooks = borrowedBookRepository.findByUserAndIsReturned(user, false);
 
-        List<BorrowedBookDto> userBooksList = Optional.ofNullable(userNotReturnedBooks).orElse(Collections.emptyList())
+        return Optional.ofNullable(userNotReturnedBooks).orElse(Collections.emptyList())
                 .stream()
                 .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
                 .toList();
-
-        return userBooksList;
     }
     
     public List<BorrowedBookDto> getAllBorrowedBooks() {
 
         List<BorrowedBook> allBooked = borrowedBookRepository.findByIsReturned(false);
 
-        List<BorrowedBookDto> allBorrowedList = Optional.ofNullable(allBooked).orElse(Collections.emptyList())
+        return Optional.ofNullable(allBooked).orElse(Collections.emptyList())
                 .stream()
                 .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
                 .toList();
-
-        return allBorrowedList;
 
     }
     
@@ -110,12 +105,10 @@ public class BorrowingService {
 
         List<BorrowedBook> borrowingHistory = borrowedBookRepository.findAll();
 
-        List<BorrowedBookDto> allBorrowedList = Optional.ofNullable(borrowingHistory).orElse(Collections.emptyList())
+        return Optional.ofNullable(borrowingHistory).orElse(Collections.emptyList())
                 .stream()
                 .map(ele -> modelMapper.map(ele, BorrowedBookDto.class))
                 .toList();
-
-        return allBorrowedList;
 
     }
 

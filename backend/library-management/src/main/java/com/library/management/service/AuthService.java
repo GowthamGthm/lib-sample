@@ -6,7 +6,10 @@ import com.library.management.repository.UserRepository;
 import com.library.management.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ott.InvalidOneTimeTokenException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,7 +31,7 @@ public class AuthService {
 //        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String token = jwtTokenProvider.generateToken(user);
 
@@ -38,14 +41,14 @@ public class AuthService {
     public AuthResponse validateSession(String token) {
 
         if (!token.startsWith("Bearer ")) {
-            throw new RuntimeException("Invalid token format. Expected format; Bearer <token>");
+            throw new InvalidOneTimeTokenException("Invalid token format. Expected format; Bearer <token>");
         }
         String[] tokenParts = token.split(" ");
         jwtTokenProvider.validateToken(tokenParts[1]);
         String userName = jwtTokenProvider.getUsernameFromToken(tokenParts[1]);
 
         User user = userRepository.findByUsername(userName)
-                .orElseThrow(() -> new RuntimeException("Not a valid session"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found/ Not a valid session"));
 
         return new AuthResponse(tokenParts[1], user.getUsername(), user.getFullName(), user.getEmail());
 

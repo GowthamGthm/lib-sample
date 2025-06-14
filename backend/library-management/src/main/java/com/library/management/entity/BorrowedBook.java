@@ -2,10 +2,15 @@
 package com.library.management.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "borrowed_books")
+@Getter
+@Setter
 public class BorrowedBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,9 +30,10 @@ public class BorrowedBook {
     @Column(name = "returned_at")
     private LocalDateTime returnedAt;
     
-    @Column(name = "is_returned")
-    private Boolean isReturned;
-    
+    @Column(name = "is_returned", nullable = false, columnDefinition = "boolean default false")
+    private boolean isReturned;
+
+
     public BorrowedBook() {
         this.borrowedAt = LocalDateTime.now();
         this.isReturned = false;
@@ -39,22 +45,5 @@ public class BorrowedBook {
         this.book = book;
     }
     
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
-    
-    public Book getBook() { return book; }
-    public void setBook(Book book) { this.book = book; }
-    
-    public LocalDateTime getBorrowedAt() { return borrowedAt; }
-    public void setBorrowedAt(LocalDateTime borrowedAt) { this.borrowedAt = borrowedAt; }
-    
-    public LocalDateTime getReturnedAt() { return returnedAt; }
-    public void setReturnedAt(LocalDateTime returnedAt) { this.returnedAt = returnedAt; }
-    
-    public Boolean getIsReturned() { return isReturned; }
-    public void setIsReturned(Boolean isReturned) { this.isReturned = isReturned; }
+
 }

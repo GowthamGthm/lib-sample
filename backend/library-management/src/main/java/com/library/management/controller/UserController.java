@@ -2,19 +2,23 @@
 package com.library.management.controller;
 
 import com.library.management.entity.User;
+import com.library.management.exceptions.UserOperationFailed;
 import com.library.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/private/api/users")
 public class UserController {
-    
+
     @Autowired
     private UserService userService;
-    
+
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
         try {
@@ -24,7 +28,7 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
         try {
@@ -35,7 +39,7 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
-    
+
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody User user) {
         try {
@@ -45,7 +49,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("User creation failed: " + e.getMessage());
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
         try {
@@ -55,14 +59,15 @@ public class UserController {
             return ResponseEntity.badRequest().body("User update failed: " + e.getMessage());
         }
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
-            return ResponseEntity.ok("User deleted successfully");
+            Map<String, String> message = Map.of("message", "User deleted successfully");
+            return ResponseEntity.ok(message);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("User deletion failed: " + e.getMessage());
+            throw new UserOperationFailed(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), "User deletion failed");
         }
     }
 }

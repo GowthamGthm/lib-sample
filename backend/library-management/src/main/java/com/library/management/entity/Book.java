@@ -2,11 +2,17 @@
 package com.library.management.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "books")
+@Getter
+@Setter
 public class Book {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,9 +39,13 @@ public class Book {
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
+
     public Book() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    public Book(Long id) {
+        this.id = id;
     }
     
     public Book(String title, String author, String isbn, String genre, Integer publicationYear, Integer totalCopies) {
@@ -48,32 +58,5 @@ public class Book {
         this.totalCopies = totalCopies;
         this.availableCopies = totalCopies;
     }
-    
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    
-    public String getAuthor() { return author; }
-    public void setAuthor(String author) { this.author = author; }
-    
-    public String getIsbn() { return isbn; }
-    public void setIsbn(String isbn) { this.isbn = isbn; }
-    
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
-    
-    public Integer getPublicationYear() { return publicationYear; }
-    public void setPublicationYear(Integer publicationYear) { this.publicationYear = publicationYear; }
-    
-    public Integer getTotalCopies() { return totalCopies; }
-    public void setTotalCopies(Integer totalCopies) { this.totalCopies = totalCopies; }
-    
-    public Integer getAvailableCopies() { return availableCopies; }
-    public void setAvailableCopies(Integer availableCopies) { this.availableCopies = availableCopies; }
-    
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
 }
