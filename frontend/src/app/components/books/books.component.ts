@@ -22,8 +22,8 @@ export class BooksComponent implements OnInit {
     availableCopies: 1,
   };
   loading = false;
-  error = "";
-  success = "";
+  error: string = "";
+  success: string = "";
 
   constructor(private bookService: BookService) {}
 
@@ -38,7 +38,7 @@ export class BooksComponent implements OnInit {
         this.filteredBooks = books;
       },
       error: (error) => {
-        this.error = "Failed to load books";
+        this.showError("Failed to load books");
       },
     });
   }
@@ -89,13 +89,11 @@ export class BooksComponent implements OnInit {
       totalCopies: 1,
       availableCopies: 1,
     };
-    this.error = "";
-    this.success = "";
   }
 
   addBook(): void {
     if (!this.newBook.title || !this.newBook.author || !this.newBook.isbn) {
-      this.error = "Title, Author, and ISBN are required";
+      this.showError("Title, Author, and ISBN are required");
       return;
     }
 
@@ -106,13 +104,13 @@ export class BooksComponent implements OnInit {
       next: (book) => {
         this.books.push(book);
         this.filteredBooks = this.books;
-        this.success = "Book added successfully";
+        this.showSuccess("Book added successfully");
         this.resetForm();
         this.showAddForm = false;
         this.loading = false;
       },
       error: (error) => {
-        this.error = error.error || "Failed to add book";
+        this.showError(error.error || "Failed to add book");
         this.loading = false;
       },
     });
@@ -124,12 +122,24 @@ export class BooksComponent implements OnInit {
         next: () => {
           this.books = this.books.filter((book) => book.id !== id);
           this.filteredBooks = this.books;
-          this.success = "Book deleted successfully";
+          this.showSuccess("Book deleted successfully");
         },
         error: (error) => {
-          this.error = "Failed to delete book";
+          // this.error = "Failed to delete book";
+          this.showError(error.error?.message || "Failed to delete book");
         },
       });
     }
   }
+
+  showError(message: string) {
+    this.error = message;
+    setTimeout(() => (this.error = ""), 5000);
+  }
+
+  showSuccess(message: string) {
+    this.success = message;
+    setTimeout(() => (this.success = ""), 5000);
+  }
+
 }

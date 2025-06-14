@@ -43,20 +43,23 @@ export class BookService {
   }
 
   deleteBook(id: number): Observable<any> {
-    return this.http
-      .delete(`${environment.privateUrL}/books/${id}`, {
-        observe: "response",
-        responseType: "text",
-      })
-      .pipe(
-        map((response) => {
-          console.log("Delete success:", response);
-          return response.body;
-        }),
-        catchError((error) => {
-          console.error("Delete error:", error);
-          throw error;
-        })
-      );
+
+    return this.http.delete(`${environment.privateUrL}/books/${id}`);
+
+    // return this.http
+    //   .delete(`${environment.privateUrL}/books/${id}`, {
+    //     observe: "response",
+    //     responseType: "text",
+    //   })
+    //   .pipe(
+    //     map((response) => {
+    //       console.log("Delete success:", response);
+    //       return response.body;
+    //     }),
+    //     catchError((error) => {
+    //       console.error("Delete error:", error);
+    //       throw error;
+    //     })
+    //   );
   }
 }

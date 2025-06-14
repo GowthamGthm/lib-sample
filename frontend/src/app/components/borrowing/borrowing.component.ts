@@ -18,8 +18,8 @@ export class BorrowingComponent implements OnInit {
   availableBooks: Book[] = [];
   users: User[] = [];
   currentUser$: Observable<User | null>;
-  selectedUserId: number | null = null;
-  selectedBookId: number | null = null;
+  selectedUserId: number | null = 0;
+  selectedBookId: number | null = 0;
   loading = false;
   error = "";
   success = "";
@@ -135,4 +135,5 @@ export class BorrowingComponent implements OnInit {
   getRemainingBooksCount(): number {
     return Math.max(0, this.availableBooks.length - 5);
   }
+
 }

@@ -24,7 +24,7 @@
                   [(ngModel)]="selectedUserId"
                   name="user"
                   required>
-                  <option value="">Choose a user...</option>
+                  <option value="0">Choose a user...</option>
                   <option *ngFor="let user of users" [value]="user.id">
                     {{ user.fullName }} ({{ user.username }})
                   </option>
@@ -38,7 +38,7 @@
                   [(ngModel)]="selectedBookId"
                   name="book"
                   required>
-                  <option value="">Choose a book...</option>
+                  <option value="0">Choose a book...</option>
                   <option *ngFor="let book of availableBooks" [value]="book.id">
                     {{ book.title }} by {{ book.author }} ({{ book.availableCopies }} available)
                   </option>
