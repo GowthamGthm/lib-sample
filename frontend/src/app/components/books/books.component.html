@@ -36,71 +36,110 @@
           <h5 class="mb-0">Add New Book</h5>
         </div>
         <div class="card-body">
-          <form (ngSubmit)="addBook()">
+          <form (ngSubmit)="addBook()" #bookForm="ngForm">
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="title" class="form-label">Title</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <input
+                  type="text"
+                  class="form-control"
                   id="title"
                   [(ngModel)]="newBook.title"
                   name="title"
+                  #title="ngModel"
                   required>
+                  <div *ngIf="title.invalid && (title.dirty || title.touched)" class="text-danger">
+                      <div *ngIf="title.errors?.['required']">
+                      Title is required
+                      </div>
+                </div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="author" class="form-label">Author</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <input
+                  type="text"
+                  class="form-control"
                   id="author"
                   [(ngModel)]="newBook.author"
                   name="author"
+                  #author="ngModel"
                   required>
+                  <div *ngIf="author.invalid && (author.dirty || author.touched)" class="text-danger">
+                      <div *ngIf="author.errors?.['required']">
+                      Author is required
+                      </div>
+                  </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="isbn" class="form-label">ISBN</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <input
+                  type="text"
+                  class="form-control"
                   id="isbn"
                   [(ngModel)]="newBook.isbn"
                   name="isbn"
+                  #isbn="ngModel"
                   required>
+                  <div *ngIf="isbn.invalid && (isbn.dirty || isbn.touched)" class="text-danger">
+                      <div *ngIf="isbn.errors?.['required']">
+                      Isbn is required
+                      </div>
+                  </div>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="genre" class="form-label">Genre</label>
-                <input 
-                  type="text" 
-                  class="form-control" 
+                <input
+                  type="text"
+                  class="form-control"
                   id="genre"
                   [(ngModel)]="newBook.genre"
-                  name="genre">
+                  name="genre"
+                  #genre="ngModel"
+                  required>
+                  <div *ngIf="genre.invalid && (genre.dirty || genre.touched)" class="text-danger">
+                      <div *ngIf="genre.errors?.['required']">
+                      Genre is required
+                      </div>
+                  </div>
               </div>
             </div>
             <div class="row">
               <div class="col-md-4 mb-3">
                 <label for="publicationYear" class="form-label">Publication Year</label>
-                <input 
-                  type="number" 
-                  class="form-control" 
+                <input
+                  type="number"
+                  class="form-control"
                   id="publicationYear"
                   [(ngModel)]="newBook.publicationYear"
                   name="publicationYear"
+                  #publicationYear="ngModel"
+                  required
                   min="1000"
-                  max="2024">
+                  max="2025">
+                  <div *ngIf="publicationYear.invalid && (publicationYear.dirty || publicationYear.touched)" class="text-danger">
+                      <div *ngIf="publicationYear.errors?.['required']">
+                      Publication Year is required
+                      </div>
+                  </div>
               </div>
               <div class="col-md-4 mb-3">
                 <label for="totalCopies" class="form-label">Total Copies</label>
-                <input 
-                  type="number" 
-                  class="form-control" 
+                <input
+                  type="number"
+                  class="form-control"
                   id="totalCopies"
                   [(ngModel)]="newBook.totalCopies"
                   name="totalCopies"
+                  #totalCopies="ngModel"
+                  required
                   min="1">
+                  <div *ngIf="totalCopies.invalid && (totalCopies.dirty || totalCopies.touched)" class="text-danger">
+                      <div *ngIf="totalCopies.errors?.['required']">
+                      Total Copies Year is required
+                      </div>
+                  </div>
               </div>
             </div>
 
@@ -109,7 +148,10 @@
             </div>
 
             <div class="d-flex gap-2">
-              <button type="submit" class="btn btn-success" [disabled]="loading">
+              <button type="submit" class="btn btn-success"
+                [class.btn-success]= "!bookForm.invalid && !loading"
+                [class.btn-secondary]= "bookForm.invalid || loading"
+                [disabled]= "loading || bookForm.invalid">
                 <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
                 Add Book
               </button>
